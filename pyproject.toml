@@ -1,0 +1,70 @@
+[project]
+name = "amail-md"
+version = "0.1.0"
+description = "A Python library that turns Markdown into HTML emails. Parses Markdown → generates MJML → renders with MRML (Rust). No Node.js. No MJML to write. Just Markdown"
+readme = "README.md"
+authors = [
+    { name = "spalax-dev", email = "jorge@spalax.dev" }
+]
+requires-python = ">=3.13"
+dependencies = [
+    "markdown-it-py>=4.2.0",
+    "mrml>=0.2.4",
+]
+
+[build-system]
+requires = ["uv_build>=0.12.3,<0.13.0"]
+build-backend = "uv_build"
+
+[dependency-groups]
+dev = [
+    "pytest==8.3.3",
+    "ruff==0.6.9",
+    "mypy>=1.11",
+]
+
+[tool.mypy]
+python_version = "3.13"
+warn_unused_configs = true
+check_untyped_defs = true
+disallow_untyped_defs = true
+disallow_untyped_calls = true
+warn_redundant_casts = true
+warn_unused_ignores = true
+strict_equality = true
+exclude = ["build/"]
+
+[tool.pytest.ini_options]
+pythonpath = ["src"]
+testpaths = ["tests"]
+
+[tool.ruff]
+target-version = "py313"
+
+[tool.ruff.lint]
+select = [
+    "E",    # pycodestyle errors
+    "W",    # pycodestyle warnings
+    "F",    # pyflakes
+    "I",    # isort
+    "UP",   # pyupgrade
+    "B",    # flake8-bugbear
+    "C4",   # flake8-comprehensions
+    "SIM",  # flake8-simplify
+    "N",    # pep8-naming
+    "RET",  # flake8-return
+    "RUF",  # ruff-specific
+    "ANN",  # mandatory type hints
+    "D",    # mandatory docstrings
+]
+ignore = [
+    "ANN101",  # self (deprecated, inferred by type checkers)
+    "ANN102",  # cls (deprecated, inferred by type checkers)
+    "D105",    # magic method docstrings not required
+    "D107",    # __init__ covered by the class docstring
+    "D203",    # conflicts with D211 and the formatter
+    "D212",    # conflicts with D213
+]
+
+[tool.ruff.lint.per-file-ignores]
+"tests/**" = ["D100"]  # test modules don't need module docstrings

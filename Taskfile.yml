@@ -1,0 +1,20 @@
+version: "3"
+
+tasks:
+  test:
+    desc: Ejecuta pytest
+    cmds:
+      - uv run pytest
+
+  check:
+    desc: Verifica lint y formato con ruff (sin modificar)
+    cmds:
+      - uv run mypy src
+      - uv run ruff check .
+      - uv run ruff format --check .
+
+  clean:
+    desc: Limpia caches y pycache
+    cmds:
+      - find . -type d -name __pycache__ -prune -exec rm -rf {} +
+      - rm -rf .ruff_cache .pytest_cache
