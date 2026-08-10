@@ -1,0 +1,21 @@
+@startuml
+!include https://raw.githubusercontent.com/plantuml-stdlib/C4-PlantUML/master/C4_Context.puml
+
+title System Context — amail-md
+
+Person(author, "Content Author", "Writes an email in Markdown and needs email-safe HTML")
+
+System(amailmd, "amail-md", "Library that converts Markdown into email-safe HTML (responsive, compatible with Gmail/Outlook/Apple Mail), using markdown-it-py and mrml")
+
+System_Ext(mdit, "markdown-it-py", "Markdown → AST parser (Python)")
+System_Ext(mrml, "mrml", "MJML → email-safe HTML compiler (Rust)")
+
+System_Ext(apps, "Sending Applications", "Newsletters, transactional… fill in {{variables}} and send")
+
+Rel(author, amailmd, "writes Markdown + frontmatter")
+Rel(amailmd, mdit, "uses")
+Rel(amailmd, mrml, "uses")
+Rel(amailmd, apps, "delivers HTML + text/plain")
+
+SHOW_LEGEND()
+@enduml

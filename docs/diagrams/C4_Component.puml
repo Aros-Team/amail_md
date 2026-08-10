@@ -1,0 +1,63 @@
+@startuml
+!include https://raw.githubusercontent.com/plantuml-stdlib/C4-PlantUML/master/C4_Component.puml
+
+title Components of the amail-md core container
+
+Container_Boundary(core, "amail-md — pure core (no dependencies)") {
+
+  Component(render, "render()", "orchestrator", "Wires: frontmatter → parser → segmenter → theme → compiler → plaintext. Collects warnings")
+
+  Container_Boundary(rs, "Render Services") {
+    Component(cfg, "configuration", "service", "Extracts, resolves, merges and sanitizes frontmatter + theme")
+    Component(seg, "segmenter", "core service", "Walks the markdown-it-py AST, classifies blocks → Email Structure. Supports nesting")
+    Component(pt, "plaintext", "service", "Email Structure → text/plain")
+    Component(c_res, "RenderResult", "dataclass", "Final output: html, text, meta, warnings?")
+  }
+
+  Container_Boundary(es, "Email Structure") {
+    Component(es_root, "EmailStructure", "abstract base", "Root contract of every email piece")
+    Component(es_par, "Paragraph", "block", "Plain text block (the fallback); e.g. <p>…</p>")
+    Component(es_btn, "Button", "block", "A CTA: href, text, variant?, color?, width?…")
+    Component(es_col, "ColumnCell", "block", "One column within a Columns block")
+  }
+
+  Container_Boundary(theme_b, "Configuration data") {
+    Component(es_fm, "Frontmatter", "dataclass", "Config parsed from the Markdown YAML front matter")
+    Component(es_theme, "Theme", "dataclass", "Light-dark palette: 22 color/typography/layout properties")
+  }
+}
+
+Container_Boundary(ports, "Ports") {
+  Component(p_parse, "MarkdownParser", "Protocol", "parse(md) -> Email Structure")
+  Component(p_comp, "MjmlCompiler", "Protocol", "to_html(structure) -> html")
+  Component(p_wrap, "Wrapper", "Protocol", "wrap(structure, theme) -> mjml")
+}
+
+Container_Boundary(adapters, "Adapters") {
+  Component(a_parse, "MarkdownItParser", "adapter", "markdown → Email Structure (uses markdown-it-py)")
+  Component(a_comp, "MrmlCompiler", "adapter", "Email Structure → MJML → HTML (uses mrml)")
+  Component(a_wrap, "DefaultWrapper", "adapter", "head + body → <mjml>")
+}
+
+System_Ext(mdit, "markdown-it-py", "external lib")
+System_Ext(mrml, "mrml", "external lib")
+
+Rel(render, cfg, "uses")
+Rel(render, seg, "uses")
+Rel(render, pt, "uses")
+Rel(render, p_parse, "uses")
+Rel(render, p_comp, "uses")
+Rel(render, p_wrap, "uses")
+Rel(seg, es, "builds")
+Rel(cfg, es_fm, "parses")
+Rel(cfg, es_theme, "resolves/merges")
+Rel(pt, es, "consumes")
+Rel(p_parse, a_parse, "implemented by")
+Rel(p_comp, a_comp, "implemented by")
+Rel(p_wrap, a_wrap, "implemented by")
+Rel(a_parse, mdit, "imports")
+Rel(a_comp, mrml, "imports")
+Rel(render, c_res, "returns")
+
+SHOW_LEGEND()
+@enduml
