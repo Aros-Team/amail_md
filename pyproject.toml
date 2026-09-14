@@ -1,6 +1,6 @@
 [project]
 name = "amail-md"
-version = "0.1.0"
+version = "0.1.1"
 description = "A Python library that turns Markdown into HTML emails. Parses Markdown → generates MJML → renders with MRML (Rust). No Node.js. No MJML to write. Just Markdown"
 readme = "README.md"
 authors = [
