@@ -2,6 +2,8 @@
 site_name = "amail-md"
 site_description = "Markdown to email-safe HTML — Python library"
 site_url = "https://aros-team.github.io/amail_md/"
+repo_url = "https://github.com/Aros-Team/amail_md"
+repo_name = "Aros-Team/amail_md"
 exclude_docs = "harness/"
 
 nav = [
@@ -20,10 +22,6 @@ nav = [
     ]},
 ]
 
-[project.repository]
-url = "https://github.com/Aros-Team/amail_md"
-name = "Aros-Team/amail_md"
-
 # ── Theme ──────────────────────────────────────────────
 
 [project.theme]
@@ -35,6 +33,9 @@ features = [
     "search.suggest",
     "content.code.copy",
 ]
+
+[project.theme.icon]
+repo = "fontawesome/brands/github"
 
 [[project.theme.palette]]
 media = "(prefers-color-scheme: light)"
