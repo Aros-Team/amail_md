@@ -1,0 +1,79 @@
+[project]
+site_name = "amail-md"
+site_description = "Markdown to email-safe HTML — Python library"
+site_url = "https://aros-team.github.io/amail_md/"
+exclude_docs = "harness/"
+
+nav = [
+    { "Home" = "index.md" },
+    { "Getting Started" = "getting-started.md" },
+    { "API Reference" = "api-reference.md" },
+    { "Examples" = "examples.md" },
+    { "Changelog" = "changelog.md" },
+    { "Contributing" = [
+        "contributing/index.md",
+        "contributing/architecture.md",
+        "contributing/development.md",
+        "contributing/conventions.md",
+        "contributing/testing.md",
+        "adrs/index.md",
+    ]},
+]
+
+[project.repository]
+url = "https://github.com/Aros-Team/amail_md"
+name = "Aros-Team/amail_md"
+
+# ── Theme ──────────────────────────────────────────────
+
+[project.theme]
+name = "material"
+features = [
+    "navigation.tabs",
+    "navigation.sections",
+    "navigation.top",
+    "search.suggest",
+    "content.code.copy",
+]
+
+[[project.theme.palette]]
+media = "(prefers-color-scheme: light)"
+scheme = "default"
+primary = "indigo"
+accent = "indigo"
+toggle.icon = "material/brightness-7"
+toggle.name = "Switch to dark mode"
+
+[[project.theme.palette]]
+media = "(prefers-color-scheme: dark)"
+scheme = "slate"
+primary = "indigo"
+accent = "indigo"
+toggle.icon = "material/brightness-4"
+toggle.name = "Switch to light mode"
+
+# ── Markdown extensions ────────────────────────────────
+
+[project.markdown_extensions]
+admonition = {}
+toc.permalink = true
+
+[project.markdown_extensions.pymdownx.highlight]
+anchor_linenums = true
+
+[project.markdown_extensions.pymdownx.superfences]
+
+[project.markdown_extensions.pymdownx.tabbed]
+alternate_style = true
+
+# ── Plugins ────────────────────────────────────────────
+
+[project.plugins.search]
+
+[project.plugins.mkdocstrings.handlers.python]
+paths = ["src"]
+
+[project.plugins.mkdocstrings.handlers.python.options]
+show_source = true
+show_root_heading = true
+members_order = "source"
