@@ -22,6 +22,10 @@ dev = [
     "ruff==0.6.9",
     "mypy>=1.11",
 ]
+docs = [
+    "zensical>=0.0.59",
+    "mkdocstrings-python>=0.26",
+]
 
 [tool.mypy]
 python_version = "3.13"
