@@ -15,9 +15,10 @@
 |---|---|
 | `activities.json`, `progress/current.md` | always, at start |
 | `progress/history.md` | need past context |
-| `docs/architecture.md` | before implement |
-| `docs/conventions.md` | before write code |
-| `docs/verification.md`, `docs/CHECKPOINTS.md` | before declaring done |
+| `docs/contributing/architecture.md` | before implement |
+| `docs/contributing/conventions.md` | before write code |
+| `docs/contributing/development.md` | before any task (workflow policy) |
+| `docs/harness/verification.md`, `docs/harness/CHECKPOINTS.md` | before declaring done |
 | `scripts/harness.py` | verification gate |
 | `src/`, `tests/` | implement / verify |
 
@@ -26,6 +27,7 @@
 ## Hard rules
 
 - **One task at a time**; don't mix activities. Parallel tasks only within one activity.
+- **Docs → Test → Implement** — never write code before docs and tests exist. See `docs/development.md`.
 - **No `done` without green tests** — `uv run python scripts/harness.py` all green.
 - Document in `progress/current.md` **while** working, not after. Include plan + task breakdown.
 - If unsure, check `docs/` before inventing. If a tool misbehaves, log it in `progress/current.md` and stop — no workarounds.

@@ -16,3 +16,4 @@ wheels/
 # Harness tracking (session state, not tracked)
 activities.json
 progress/*
+site/

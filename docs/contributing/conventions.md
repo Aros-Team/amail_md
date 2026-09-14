@@ -85,6 +85,19 @@ No `Service`/`Manager` suffixes on class names unless they describe a real role.
 - Name test functions `test_<unit>_<behavior>_<condition>` in `tests/test_*.py`.
 - New functionality must have tests (happy + error + edge paths); run
   `uv run pytest` before declaring done.
+- **Tests are written before implementation** — see `docs/development.md`.
+
+---
+
+## 7. Development Workflow
+
+**Docs → Test → Implement** — the mandatory order for every feature:
+
+1. **Document** — update architecture, API reference, examples, changelog.
+2. **Test** — write tests that validate the documentation (they should fail).
+3. **Implement** — write code that makes tests pass.
+
+See `docs/development.md` for the full policy and rationale.
 
 ---
 
