@@ -1,5 +1,13 @@
 # Changelog
 
+## [0.1.2](https://github.com/Aros-Team/amail_md/compare/v0.1.1...v0.1.2) (2026-09-14)
+
+
+### Documentation
+
+* add GitHub repo icon and fix repository config ([e0b9cb5](https://github.com/Aros-Team/amail_md/commit/e0b9cb529056f956c3a7550fa55f148c5f150e29))
+* remove explicit GitHub icon (use default git icon) ([37895d8](https://github.com/Aros-Team/amail_md/commit/37895d8383b68e1de4ba157db03e3f5ede3838d8))
+
 ## [0.1.1](https://github.com/Aros-Team/amail_md/compare/v0.1.0...v0.1.1) (2026-09-14)
 
 
