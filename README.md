@@ -25,7 +25,7 @@ amail-md takes a different approach: you write Markdown, and get email-safe HTML
 - **Deterministic** -- same input always produces the same output
 
 ```python
-from amail_md import markdown_to_email_html
+from amail_md import markdown_to_email
 
 md = """
 ---
@@ -40,7 +40,7 @@ This is **bold** and this is *italic*.
 - Item 2
 """
 
-result = markdown_to_email_html(md)
+result = markdown_to_email(md)
 print(result.html)   # email-safe HTML
 print(result.text)   # text/plain fallback
 ```
@@ -76,9 +76,9 @@ Requires Python 3.13+.
 ### From Python
 
 ```python
-from amail_md import markdown_to_email_html
+from amail_md import markdown_to_email
 
-result = markdown_to_email_html("# Hello\n\nWorld")
+result = markdown_to_email("# Hello\n\nWorld")
 print(result.html)
 ```
 
@@ -91,7 +91,7 @@ echo "# Hello\n\nWorld" | amail-md
 ### With Theme
 
 ```python
-from amail_md import markdown_to_email_html
+from amail_md import markdown_to_email
 
 md = """
 ---
@@ -106,12 +106,12 @@ theme:
 Your content here.
 """
 
-result = markdown_to_email_html(md)
+result = markdown_to_email(md)
 ```
 
 ## What You Get
 
-The `RenderResult` dataclass returned by `markdown_to_email_html`:
+The `markdown_to_email` function returns a `RenderResult`:
 
 | Field | Type | Description |
 |-------|------|-------------|
@@ -124,24 +124,7 @@ The `RenderResult` dataclass returned by `markdown_to_email_html`:
 
 The library follows a **Ports & Adapters** (hexagonal) architecture. The pipeline is a sequence of pure functions, each feeding the next:
 
-```
-Markdown
-  |
-  v
-[Parse]  -- markdown-it-py --> AST
-  |
-  v
-[Segment] -- classify blocks --> EmailStructure
-  |
-  v
-[Wrap]  -- wrap into MJML --> <mjml> document
-  |
-  v
-[Compile] -- mrml (Rust) --> email-safe HTML
-  |
-  v
-[Plaintext] -- text/plain fallback
-```
+<img src="docs/diagrams/svg/Sequence_Pipelines.svg" alt="Verify & Email Pipelines" width="100%">
 
 Each stage is independently testable. No I/O, no global state, no hidden dependencies.
 
@@ -181,6 +164,12 @@ Your email content here.
 ```
 
 The `Theme` dataclass defines the visual identity with 22 properties across colors, typography, layout, and dark mode support.
+
+## Credits
+
+Inspired by [emailmd](https://github.com/anypost/emailmd). We analyzed its
+pipeline and chose a structured intermediate model over regex-based HTML
+post-processing.
 
 ## Contributing
 

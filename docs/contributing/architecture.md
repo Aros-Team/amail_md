@@ -28,16 +28,21 @@ Dependencies (see ADR-0001):
 ## 2. Core Pipeline (pure functions)
 
 The package exposes a small set of **pure functions** (no I/O, no global state).
-The canonical entry point:
+The canonical entry points:
 
 ```python
-from amail_md import markdown_to_email_html
+from amail_md import markdown_to_email, verify_markdown
 
-result = markdown_to_email_html(md_text)
+# Convert to email HTML
+result = markdown_to_email(md_text)
 # result.html  — email-safe HTML
 # result.text  — text/plain fallback
 # result.meta  — extracted metadata
 # result.warnings?  — optional warnings
+
+# Validate markdown
+errors = verify_markdown(md_text)
+# errors — list of ValidationError (empty if valid)
 ```
 
 Pipeline stages (each a pure function that feeds the next):
@@ -49,9 +54,12 @@ Pipeline stages (each a pure function that feeds the next):
 | **Segment** | Walk AST, classify blocks → Email Structure (Paragraph, Button, Heading…) |
 | **Wrap** | Wrap Email Structure into MJML (head + body → `<mjml>`) |
 | **Compile** | MJML → email-safe HTML via mrml |
-| **Plaintext** | Email Structure → text/plain fallback |
 
-The orchestrator (`render()`) drives this pipeline and collects warnings.
+The orchestrators (`markdown_to_email()` and `verify_markdown()`) drive this pipeline and collect warnings/errors. Plaintext generation is part of `markdown_to_email()`, not a separate stage.
+
+### Render Pipeline Sequence
+
+<img src="../../diagrams/svg/Sequence_Pipelines.svg" alt="Render Pipeline Sequence Diagram" width="100%">
 
 Rules:
 - Functions are **pure**: same input → same output, no hidden state.
@@ -69,18 +77,18 @@ Rules:
 amail_md/
   __init__.py       # public API (the functions users import) + main()
   render.py         # orchestrator: drives the pipeline, returns RenderResult
-  configuration/    # frontmatter parsing, Theme resolution/merging
+  configurer/       # frontmatter parsing, Theme resolution/merging
   segmenter/        # walks markdown-it-py AST → Email Structure
-  plaintext/        # Email Structure → text/plain
+  renderer/         # assembles EmailStructure → MJML → HTML
   email_structure/  # domain model: Paragraph, Button, ColumnCell, Heading…
-  ports/            # Protocol interfaces: MarkdownParser, MjmlCompiler, Wrapper
-  adapters/         # concrete implementations: MarkdownItParser, MrmlCompiler, DefaultWrapper
+  ports/            # Protocol interfaces: MarkdownParser, MjmlCompiler
+  adapters/         # concrete implementations: MarkdownItParser, MrmlCompiler
   exceptions.py     # typed error hierarchy
 ```
 
 Architecture pattern: **Ports & Adapters** (hexagonal).
 
-- `ports/` defines Protocol interfaces (MarkdownParser, MjmlCompiler, Wrapper).
+- `ports/` defines Protocol interfaces (MarkdownParser, MjmlCompiler).
 - `adapters/` implements them using external libs (markdown-it-py, mrml).
 - The core only depends on Ports, never on Adapters directly.
 
@@ -130,7 +138,7 @@ theme:
 Your email content here.
 ```
 
-The configuration stage:
+The configurer stage:
 1. Extracts the YAML frontmatter block (delimited by `---`).
 2. Parses it into a `Frontmatter` dataclass.
 3. Resolves the `Theme` (22 properties: colors, typography, layout).
@@ -176,7 +184,8 @@ Responsive behavior (via MJML):
 
 Everything in `src/amail_md/__init__.py` is the public contract:
 
-- `markdown_to_email_html(source, **options) -> RenderResult` — the primary function.
+- `markdown_to_email(source, **options) -> RenderResult` — converts Markdown to email-safe HTML.
+- `verify_markdown(source) -> list[ValidationError]` — validates Markdown and returns detailed errors.
 - Typed exceptions in `amail_md.exceptions`.
 - Domain types in `amail_md.email_structure` (Paragraph, Button, Heading, etc.)
   for advanced usage and extension.
@@ -189,6 +198,17 @@ Everything in `src/amail_md/__init__.py` is the public contract:
 | `text` | `str` | text/plain fallback |
 | `meta` | `dict` | Extracted metadata (subject, preheader…) |
 | `warnings` | `list[str]?` | Optional conversion warnings |
+
+`ValidationError` dataclass:
+
+| Field | Type | Description |
+|-------|------|-------------|
+| `line` | `int` | Line number where the error occurred |
+| `column` | `int` | Column number (0 if not applicable) |
+| `code` | `str` | Error code (e.g., BUTTON_MISSING_HREF) |
+| `message` | `str` | Human-readable error description |
+| `suggestion` | `str` | How to fix the issue |
+| `severity` | `str` | Error severity (error, warning, info) |
 
 `main()` backs the `amail-md` console script; it reads input and prints HTML.
 It is thin and contains no conversion logic beyond calling the public API.
@@ -221,9 +241,9 @@ Concrete subclasses:
 Rules:
 - The core only knows these domain elements.
 - `Theme` is **not** an `EmailStructure` — it is configuration.
-- `RenderResult` (html, text, meta, warnings) is also separate.
-- Adding a new element means adding a new subclass and updating the segmenter
-  and compiler.
+- `RenderResult` (html, text, meta, warnings) is assembled by the orchestrator.
+- Each `EmailStructure` component implements `to_mjml(theme)` to render itself.
+- Adding a new element means adding a new subclass with `to_mjml()`.
 
 ---
 
@@ -288,3 +308,9 @@ The main containers inside amail-md:
 Internal components of the core container:
 
 <img src="../../diagrams/svg/C4_Component.svg" alt="Component Diagram" width="100%">
+
+### Render Pipeline
+
+Sequence diagram showing how `markdown_to_email()` and `verify_markdown()` drive the conversion pipeline:
+
+<img src="../../diagrams/svg/Sequence_Pipelines.svg" alt="Render Pipeline Sequence Diagram" width="100%">

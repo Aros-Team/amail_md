@@ -12,6 +12,12 @@ dependencies = [
     "mrml>=0.2.4",
 ]
 
+[project.optional-dependencies]
+cli = ["typer>=0.9.0"]
+
+[project.scripts]
+amail-md = "amail_md.cli:main"
+
 [build-system]
 requires = ["uv_build>=0.12.3,<0.13.0"]
 build-backend = "uv_build"

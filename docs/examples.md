@@ -3,7 +3,7 @@
 ## Simple Email
 
 ```python
-from amail_md import markdown_to_email_html
+from amail_md import markdown_to_email
 
 md = """
 ---
@@ -21,7 +21,7 @@ Thanks for signing up. Here's what you need to know:
 [Get Started](https://example.com/start)
 """
 
-result = markdown_to_email_html(md)
+result = markdown_to_email(md)
 ```
 
 ## With Buttons
@@ -69,7 +69,7 @@ Content for the right column.
 ## Custom Theme
 
 ```python
-from amail_md import markdown_to_email_html
+from amail_md import markdown_to_email
 
 md = """
 ---
@@ -86,15 +86,15 @@ theme:
 This email uses a custom theme.
 """
 
-result = markdown_to_email_html(md)
+result = markdown_to_email(md)
 ```
 
 ## With Plaintext Fallback
 
 ```python
-from amail_md import markdown_to_email_html
+from amail_md import markdown_to_email
 
-result = markdown_to_email_html("# Hello\n\nWorld")
+result = markdown_to_email("# Hello\n\nWorld")
 
 # Use both in your email client
 email_body = result.html

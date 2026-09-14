@@ -3,35 +3,36 @@
 
 title Containers of amail-md
 
-Person(author, "Content Author", "Writes Markdown")
+Person(user, "User")
 
 System_Boundary(amailmd, "amail-md") {
 
-  Container(render, "render()", "Python / API", "Orchestrator. Drives the pipeline and returns the result")
+  Container(api, "Public API", "amail_md.__init__", "markdown_to_email(), verify_markdown()")
 
-  Container(cfg, "Configuration", "service", "Parses Frontmatter, resolves Theme")
-  Container(services, "Render Services", "core", "Configuration, Segmenter, Plaintext, RenderResult")
-  Container(es, "Email Structure", "Python / dataclasses", "Structured email: Paragraph, Button, ColumnCell, Heading, …")
-  Container(ports, "Ports", "Python / Protocol", "MarkdownParser, MjmlCompiler, Wrapper")
-  Container(adapters, "Adapters", "Python", "MarkdownItParser, MrmlCompiler, DefaultWrapper")
+  Container(services, "Render Services", "core", "Segmenter + Renderer")
+
+  Container(linter, "Linter", "core", "Validates Email Structure against email rules")
+
+  Container(es, "Email Structure", "domain model", "Contract for email pieces")
+
+  Container(ports, "Ports", "Protocol", "MarkdownParser, MjmlCompiler")
+  Container(adapters, "Adapters", "Python", "MarkdownItParser, MrmlCompiler")
 }
 
 System_Ext(mdit, "markdown-it-py", "Markdown → AST")
 System_Ext(mrml, "mrml", "MJML → HTML")
 System_Ext(apps, "Sending Applications", "fill in {{variables}} and send")
 
-Rel(author, render, "calls")
-Rel(render, services, "orchestrates")
-Rel(render, es, "uses")
-Rel(render, ports, "uses")
-Rel(render, cfg, "uses")
-
+Rel(user, api, "calls")
+Rel(api, services, "uses")
+Rel(api, linter, "uses")
+Rel(services, ports, "uses")
+Rel(linter, services, "uses")
+Rel(services, es, "uses")
 Rel(ports, adapters, "implemented by")
-
 Rel(adapters, mdit, "imports")
 Rel(adapters, mrml, "imports")
-
-Rel(render, apps, "returns HTML + text")
+Rel(api, apps, "returns HTML + text")
 
 SHOW_LEGEND()
 @enduml

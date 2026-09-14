@@ -21,9 +21,9 @@ uv add amail-md
 ### From Python
 
 ```python
-from amail_md import markdown_to_email_html
+from amail_md import markdown_to_email
 
-result = markdown_to_email_html("# Hello\n\nWorld")
+result = markdown_to_email("# Hello\n\nWorld")
 print(result.html)
 ```
 
@@ -36,7 +36,7 @@ echo "# Hello\n\nWorld" | amail-md
 ### With Theme
 
 ```python
-from amail_md import markdown_to_email_html
+from amail_md import markdown_to_email
 
 md = """
 ---
@@ -51,7 +51,7 @@ theme:
 Your content here.
 """
 
-result = markdown_to_email_html(md)
+result = markdown_to_email(md)
 ```
 
 ## What You Get

@@ -7,10 +7,13 @@ and consequences.
 
 | ADR | Decision |
 |-----|----------|
-| [0001](0001-dependencies.md) | Dependencies: markdown-it-py and mrml |
-| [0002](0002-email-structure-root.md) | Email Structure as the model root |
-| [0003](0003-structured-output-not-regex.md) | Structured output instead of regex |
-| [0004](0004-documentation-mkdocs.md) | Documentation: MkDocs + Material |
+| [001](001-dependencies.md) | Dependencies: markdown-it-py and mrml |
+| [002](002-email-structure-root.md) | Email Structure as the model root |
+| [003](003-structured-output-not-regex.md) | Structured output instead of regex |
+| [004](004-documentation-mkdocs.md) | Documentation: MkDocs + Material |
+| [005](005-cli-optional-dependency.md) | CLI as optional dependency |
+| [006](006-linting-verify-markdown.md) | Linting with verify_markdown() |
+| [007](007-email-structure-renders-mjml.md) | EmailStructure components render MJML |
 
 ## Format
 

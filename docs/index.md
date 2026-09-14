@@ -11,7 +11,7 @@ pip install amail-md
 ## Quick Start
 
 ```python
-from amail_md import markdown_to_email_html
+from amail_md import markdown_to_email
 
 md = """
 ---
@@ -26,7 +26,7 @@ This is **bold** and this is *italic*.
 - Item 2
 """
 
-result = markdown_to_email_html(md)
+result = markdown_to_email(md)
 print(result.html)   # email-safe HTML
 print(result.text)   # text/plain fallback
 ```

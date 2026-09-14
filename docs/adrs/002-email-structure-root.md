@@ -38,7 +38,7 @@ We needed a name and a shape for this model that reflect the domain.
 - The core only knows these domain elements. `Theme` is **not** an
   `EmailStructure` — it is configuration (light/dark palette, typography,
   layout) passed separately, not a piece of the email tree. `RenderResult`
-  (the final output: html, text, meta, warnings) is also separate.
+  (the final output: html, text, meta, warnings) is assembled by the orchestrator.
 
 ## Consequences
 

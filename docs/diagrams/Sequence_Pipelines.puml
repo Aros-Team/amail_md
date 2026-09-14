@@ -1,0 +1,84 @@
+@startuml
+!theme plain
+
+title Pipelines: Verify & Email — amail-md
+
+actor "User" as user
+participant "verify_markdown()" as verify
+participant "markdown_to_email()" as email
+participant "configurer" as cfg
+participant "segmenter" as seg
+participant "MarkdownParser\n(Port)" as parse
+participant "LinterEngine" as linter
+participant "renderer" as renderer
+participant "MjmlCompiler\n(Port)" as compile
+
+== Verify Flow ==
+
+user -> verify : verify_markdown(source)
+activate verify
+
+verify -> seg : segment(source)
+activate seg
+seg -> parse : parse(source)
+activate parse
+parse -> parse : markdown-it-py → AST
+parse --> seg : AST
+deactivate parse
+seg -> seg : walk AST → classify blocks
+seg --> verify : EmailStructure
+deactivate seg
+
+verify -> linter : validate(email_structure)
+activate linter
+linter -> linter : apply rules
+linter --> verify : errors[]
+deactivate linter
+
+verify --> user : errors[]
+deactivate verify
+
+== Email Flow ==
+
+user -> email : markdown_to_email(source)
+activate email
+
+email -> cfg : configure(source)
+activate cfg
+cfg -> cfg : parse frontmatter, resolve theme
+cfg --> email : Frontmatter + Theme
+deactivate cfg
+
+email -> seg : segment(source)
+activate seg
+seg -> parse : parse(source)
+activate parse
+parse -> parse : markdown-it-py → AST
+parse --> seg : AST
+deactivate parse
+seg -> seg : walk AST → classify blocks
+seg --> email : EmailStructure
+deactivate seg
+
+email -> linter : validate(email_structure)
+activate linter
+linter -> linter : apply rules (warnings only)
+linter --> email : warnings[]
+deactivate linter
+
+email -> renderer : render(email_structure, theme)
+activate renderer
+renderer -> renderer : each component.to_mjml(theme)
+renderer -> renderer : assemble MJML document
+renderer -> compile : compile(mjml)
+activate compile
+compile -> compile : mrml (Rust) → HTML
+compile --> renderer : HTML
+deactivate compile
+renderer --> email : HTML
+deactivate renderer
+
+email --> user : RenderResult
+deactivate email
+
+@enduml
