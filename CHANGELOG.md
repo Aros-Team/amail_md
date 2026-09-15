@@ -1,5 +1,24 @@
 # Changelog
 
+## [0.2.0](https://github.com/Aros-Team/amail_md/compare/v0.1.2...v0.2.0) (2026-09-15)
+
+
+### Features
+
+* define project architecture patterns ([6d383de](https://github.com/Aros-Team/amail_md/commit/6d383deb8dce4334345717f2763b4b446e2db148))
+* implement all 11 remaining EmailStructure types (Activity 2) ([9b26960](https://github.com/Aros-Team/amail_md/commit/9b2696014bbb9243b974251da4349a2691040fe3))
+* **pipeline:** add base pipeline, Initial Button component, and CLI ([f24513f](https://github.com/Aros-Team/amail_md/commit/f24513f7d836240251de39e2cf224801d087a5a9))
+
+
+### Bug Fixes
+
+* ignore mrml missing stubs in mypy config ([6b13145](https://github.com/Aros-Team/amail_md/commit/6b131451e08c619d87a5e7956c338a5c62ae86db))
+
+
+### Documentation
+
+* update architecture diagrams and documentation ([f19f287](https://github.com/Aros-Team/amail_md/commit/f19f2877b6283091276a78f3cc144cf16f4592b5))
+
 ## [0.1.2](https://github.com/Aros-Team/amail_md/compare/v0.1.1...v0.1.2) (2026-09-14)
 
 
