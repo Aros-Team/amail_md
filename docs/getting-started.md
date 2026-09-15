@@ -24,7 +24,7 @@ uv add amail-md
 from amail_md import markdown_to_email
 
 result = markdown_to_email("# Hello\n\nWorld")
-print(result.html)
+print(result["html"])
 ```
 
 ### From the CLI
@@ -58,7 +58,7 @@ result = markdown_to_email(md)
 
 | Field | Description |
 |-------|-------------|
-| `result.html` | Email-safe HTML (responsive, inline styles) |
-| `result.text` | text/plain fallback |
-| `result.meta` | Extracted metadata (subject, preheader…) |
-| `result.warnings` | Optional conversion warnings |
+| `result["html"]` | Email-safe HTML (responsive, inline styles) |
+| `result["text"]` | text/plain fallback |
+| `result["meta"]` | Extracted metadata (subject, preheader…) |
+| `result["warnings"]` | Optional conversion warnings |

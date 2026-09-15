@@ -1,5 +1,90 @@
 {
   "project": "amail-md",
   "description": "Markdown email tool",
-  "activities": []
+  "activities": [
+    {
+      "id": "linter-refactor",
+      "type": "chore",
+      "name": "Refactor linter to use segmenter",
+      "description": "The current verify_markdown() uses regex on raw markdown. Refactor to use the segmenter pipeline (parse → segment → lint rules) so the linter operates on EmailStructure objects, not raw text. This also fixes the button syntax inconsistency: verify_markdown() detects {{button ...}} but the segmenter uses {.button} via attrs_plugin.",
+      "acceptance": [
+        "verify_markdown() uses segmenter to build EmailStructure objects",
+        "Lint rules operate on EmailStructure, not raw regex",
+        "Button detection uses the same syntax as the segmenter ({.button})",
+        "All existing tests pass"
+      ],
+      "tasks": [
+        "Refactor verify_markdown() to use MarkdownItParser + segment()",
+        "Update lint rules to work on EmailStructure objects",
+        "Fix button syntax detection to match segmenter ({.button})",
+        "Remove regex-based detection from verify_markdown()",
+        "Update tests"
+      ],
+      "status": "pending"
+    },
+    {
+      "id": "configurer-warnings",
+      "type": "feat",
+      "name": "Add configurer and warnings to markdown_to_email",
+      "description": "markdown_to_email() currently returns empty meta and warnings. Add a configurer service to parse frontmatter and resolve themes, and integrate the linter to collect warnings during render.",
+      "acceptance": [
+        "markdown_to_email() parses YAML frontmatter into meta dict",
+        "Theme resolution works with frontmatter config",
+        "Linter warnings are collected in result['warnings']",
+        "result['meta'] contains parsed frontmatter (subject, preheader, etc.)"
+      ],
+      "tasks": [
+        "Create configurer service (frontmatter parsing + theme resolution)",
+        "Integrate configurer into markdown_to_email_parts()",
+        "Integrate linter into markdown_to_email() for warnings",
+        "Return proper meta and warnings in result dict",
+        "Update tests"
+      ],
+      "status": "pending"
+    },
+    {
+      "id": "missing-linter-codes",
+      "type": "feat",
+      "name": "Add missing linter error codes",
+      "description": "The linter currently only checks relative URLs and missing hrefs. Add the planned error codes documented in linter.md: BUTTON_MISSING_TEXT, IMAGE_MISSING_SRC, HEADING_INVALID_LEVEL, TABLE_EMPTY, CODE_BLOCK_UNSUPPORTED, LINK_EMPTY_TEXT, BUTTON_TEXT_LONG, HEADING_EMPTY, PARAGRAPH_EMPTY.",
+      "acceptance": [
+        "All planned error codes from linter.md are implemented",
+        "Each error code has corresponding lint rule",
+        "Rules operate on EmailStructure objects (depends on linter-refactor)",
+        "All tests pass"
+      ],
+      "tasks": [
+        "Implement BUTTON_MISSING_TEXT rule",
+        "Implement IMAGE_MISSING_SRC rule",
+        "Implement HEADING_INVALID_LEVEL rule",
+        "Implement TABLE_EMPTY rule",
+        "Implement CODE_BLOCK_UNSUPPORTED rule",
+        "Implement LINK_EMPTY_TEXT rule",
+        "Implement BUTTON_TEXT_LONG rule",
+        "Implement HEADING_EMPTY rule",
+        "Implement PARAGRAPH_EMPTY rule",
+        "Add tests for all new rules"
+      ],
+      "status": "pending"
+    },
+    {
+      "id": "cli-typer-migration",
+      "type": "chore",
+      "name": "Migrate CLI from argparse to typer",
+      "description": "The CLI currently uses argparse but pyproject.toml defines typer as the cli optional dependency. Migrate to typer and fix the render output behavior (currently outputs HTML only, not both HTML+text as docs describe).",
+      "acceptance": [
+        "CLI uses typer instead of argparse",
+        "typer is properly declared as cli optional dependency",
+        "render outputs HTML by default, --text for text/plain",
+        "CLI help text is clear and accurate"
+      ],
+      "tasks": [
+        "Replace argparse with typer in cli.py",
+        "Update CLI help text to match actual behavior",
+        "Verify typer optional dependency works",
+        "Update tests"
+      ],
+      "status": "pending"
+    }
+  ]
 }

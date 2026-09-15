@@ -52,18 +52,18 @@ amail-md lint emails/*.md
 **Output:**
 
 ```
-✓ bienvenida.md — no errors found
+✓ no errors found
 ```
 
 Or with errors:
 
 ```
-✗ bienvenida.md — 2 errors found
+✗ 2 error(s) found
 
-  Line 5: Button href uses relative URL
-    → Use absolute URL: https://example.com/page
+  Line 5: [BUTTON_RELATIVE_URL] Button 'Click' uses relative URL: /page
+    → Use an absolute URL: https://example.com/page
 
-  Line 8: Image missing alt text
+  Line 8: [IMAGE_MISSING_ALT] Image is missing alt text
     → Add description for accessibility
 ```
 
@@ -97,7 +97,7 @@ amail-md render <file> [options]
 |------|-------------|
 | `-o`, `--output` | Output file (default: stdout) |
 | `--text` | Output text/plain only |
-| `--html` | Output HTML only (default: both) |
+| `--html` | Output HTML only |
 
 **Examples:**
 
@@ -117,34 +117,18 @@ cat email.md | amail-md render - -o output.html
 
 **Output format:**
 
-By default, outputs both HTML and text/plain separated by a boundary:
-
-```html
-<!-- HTML -->
-<html>...</html>
-
-<!-- TEXT -->
-Hello World
-...
-```
-
-With `--html` or `--text`, outputs only the selected format.
+By default, outputs HTML. With `--text`, outputs text/plain only.
 
 ---
 
 ## Configuration
 
 The CLI reads configuration from the Markdown frontmatter, not from flags.
-See [Configuration](getting-started.md#configuration) for details.
+See [Getting Started](getting-started.md) for details.
 
 ---
 
 ## Error handling
 
 If the Markdown has errors, `lint` shows them and exits with code 1.
-`render` still produces output but includes warnings on stderr.
-
-```bash
-# Show warnings on stderr
-amail-md render bienvenida.md 2> warnings.txt
-```
+`render` still produces output regardless of lint errors.

@@ -27,8 +27,8 @@ This is **bold** and this is *italic*.
 """
 
 result = markdown_to_email(md)
-print(result.html)   # email-safe HTML
-print(result.text)   # text/plain fallback
+print(result["html"])   # email-safe HTML
+print(result["text"])   # text/plain fallback
 ```
 
 ## Features

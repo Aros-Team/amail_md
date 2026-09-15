@@ -35,10 +35,10 @@ from amail_md import markdown_to_email, verify_markdown
 
 # Convert to email HTML
 result = markdown_to_email(md_text)
-# result.html  — email-safe HTML
-# result.text  — text/plain fallback
-# result.meta  — extracted metadata
-# result.warnings?  — optional warnings
+# result["html"]  — email-safe HTML
+# result["text"]  — text/plain fallback
+# result["meta"]  — extracted metadata
+# result["warnings"]?  — optional warnings
 
 # Validate markdown
 errors = verify_markdown(md_text)
@@ -154,7 +154,7 @@ Example for Button:
 
 ```
 1. core/models/email_structure/button.py      → Button(text, url, variant)
-2. core/services/segmenter/builders/button.py  → Token + attrs{button} → Button
+2. core/services/segmenter/builders/button.py  → Token + attrs{.button} → Button
 3. infrastructure/adapters/mjml/nodes/button.py → Button → <mj-button>
 ```
 
@@ -164,7 +164,7 @@ Plugins are loaded by the `MarkdownItParser` adapter, not by core.
 
 | Plugin | Package | For Element |
 |--------|---------|-------------|
-| `attrs_plugin` | `mdit-py-plugins` | Button, Image (`{button}`, `{width}`) |
+| `attrs_plugin` | `mdit-py-plugins` | Button, Image (`{.button}`, `{width}`) |
 | `container_plugin` | `mdit-py-plugins` | Spacer, Columns, Hero (`::: name`) |
 | `front_matter_plugin` | `mdit-py-plugins` | Frontmatter (`---`) |
 | `tasklists_plugin` | `mdit-py-plugins` | Task lists (`- [x]`) |

@@ -6,9 +6,10 @@ Validate Markdown email templates and get actionable feedback.
 
 ## Overview
 
-The linter parses your Markdown, builds the Email Structure, and runs validation
-rules. It returns a list of `ValidationError` objects with line numbers, error
-codes, and suggestions for fixing issues.
+The linter validates raw Markdown using regex pattern matching. It checks for
+common email pitfalls: relative URLs in links, buttons, and images, and missing
+alt text on images. Returns a list of `ValidationError` objects with line numbers,
+error codes, and suggestions for fixing issues.
 
 ```python
 from amail_md import verify_markdown
@@ -49,10 +50,10 @@ subject: Test
 
 # errors = [
 #     ValidationError(
-#         line=6, column=1,
+#         line=7, column=0,
 #         code="BUTTON_RELATIVE_URL",
-#         message="Button href uses relative URL",
-#         suggestion="Use absolute URL: https://example.com/page",
+#         message="Button 'Click' uses relative URL: /page",
+#         suggestion="Use an absolute URL: https://example.com/page",
 #         severity="warning"
 #     )
 # ]
@@ -85,36 +86,26 @@ class ValidationError:
 
 ## Error Codes
 
-### Syntax errors
+### Implemented
+
+| Code | Message | Severity | Detection |
+|------|---------|----------|-----------|
+| `LINK_RELATIVE_URL` | Link uses relative URL | warning | regex on raw markdown |
+| `IMAGE_RELATIVE_URL` | Image src uses relative URL | warning | regex on raw markdown |
+| `IMAGE_MISSING_ALT` | Image missing alt text | warning | regex on raw markdown |
+| `BUTTON_RELATIVE_URL` | Button href uses relative URL | warning | regex + linter engine |
+| `BUTTON_MISSING_HREF` | Button missing href field | error | linter engine |
+
+### Planned
 
 | Code | Message | Severity |
 |------|---------|----------|
-| `BUTTON_MISSING_HREF` | Button missing href field | error |
 | `BUTTON_MISSING_TEXT` | Button missing text field | error |
 | `IMAGE_MISSING_SRC` | Image missing src field | error |
 | `HEADING_INVALID_LEVEL` | Heading level must be 1-6 | error |
 | `TABLE_EMPTY` | Table has no headers or rows | error |
-
-### Email compatibility
-
-| Code | Message | Severity |
-|------|---------|----------|
-| `LINK_RELATIVE_URL` | Link uses relative URL | warning |
-| `BUTTON_RELATIVE_URL` | Button href uses relative URL | warning |
-| `IMAGE_RELATIVE_URL` | Image src uses relative URL | warning |
 | `CODE_BLOCK_UNSUPPORTED` | Code blocks not supported in Outlook | info |
-
-### Accessibility
-
-| Code | Message | Severity |
-|------|---------|----------|
-| `IMAGE_MISSING_ALT` | Image missing alt text | warning |
 | `LINK_EMPTY_TEXT` | Link has empty text | warning |
-
-### Best practices
-
-| Code | Message | Severity |
-|------|---------|----------|
 | `BUTTON_TEXT_LONG` | Button text too long (>25 chars) | info |
 | `HEADING_EMPTY` | Heading has empty text | warning |
 | `PARAGRAPH_EMPTY` | Paragraph has empty text | info |
@@ -123,26 +114,19 @@ class ValidationError:
 
 ## Integration with render
 
-`verify_markdown()` is also called internally by `markdown_to_email()`. In this
-mode, only `error` severity issues cause failure; `warning` and `info` are
-collected in the `warnings` field of `RenderResult`.
-
-```python
-from amail_md import markdown_to_email
-
-result = markdown_to_email("# Hello\n\n[Click](/relative)")
-# result.warnings = ["Line 3: Link uses relative URL"]
-```
+`verify_markdown()` is a standalone function for validating raw markdown.
+`markdown_to_email()` currently does not call the linter internally —
+warnings and frontmatter processing are planned for a future release.
 
 ---
 
 ## Extending rules
 
-Rules are check functions registered in the `LinterEngine`. To add a new rule:
+Rules are check functions registered in the `Linter` engine. To add a new rule:
 
-1. Create a check function in `src/amail_md/lint/rules/`
-2. Register it in the rule registry
-3. Add tests in `tests/test_linter.py`
+1. Create a check function in `src/amail_md/core/services/linter/rules/`
+2. Register it in `rules/__init__.py` via `ACTIVE_RULES`
+3. Add tests in `tests/`
 
 ```python
 def check_button_missing_href(elements: list[EmailStructure]) -> list[ValidationError]:
@@ -155,7 +139,7 @@ def check_button_missing_href(elements: list[EmailStructure]) -> list[Validation
                 column=0,
                 code="BUTTON_MISSING_HREF",
                 message="Button missing href field",
-                suggestion="Add href: {{button href='https://...' text='...'}}",
+                suggestion="Add href: [text](https://...){.button}",
                 severity="error"
             ))
     return errors

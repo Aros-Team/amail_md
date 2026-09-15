@@ -53,22 +53,22 @@ Botón de llamada a la acción (CTA). Esencial para emails conversion-focused.
 ### Sintaxis
 
 ```markdown
-[Get Started](https://example.com){button}
+[Get Started](https://example.com){.button}
 
-[Learn More](https://example.com){button.secondary}
+[Learn More](https://example.com){.button-secondary}
 
-[Shop Sale](https://example.com){button color="#dc2626"}
+[Shop Sale](https://example.com){.button color="#dc2626"}
 ```
 
 ### Variantes
 
 | Variante | Sintaxis | Descripción |
 |----------|----------|-------------|
-| Primary | `{button}` | Botón principal (color de marca) |
-| Secondary | `{button.secondary}` | Botón secundario |
-| Success | `{button.success}` | Acción positiva (verde) |
-| Danger | `{button.danger}` | Acción destructiva (rojo) |
-| Warning | `{button.warning}` | Acción de precaución (ámbar) |
+| Primary | `{.button}` | Botón principal (color de marca) |
+| Secondary | `{.button-secondary}` | Botón secundario |
+| Success | `{.button-success}` | Acción positiva (verde) |
+| Danger | `{.button-danger}` | Acción destructiva (rojo) |
+| Warning | `{.button-warning}` | Acción de precaución (ámbar) |
 
 ### Campos
 

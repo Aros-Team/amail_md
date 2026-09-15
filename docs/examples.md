@@ -35,7 +35,7 @@ subject: Launch Announcement
 
 Try our new product today.
 
-{{button text="Learn More" href="https://example.com" variant="primary"}}
+[Learn More](https://example.com){.button}
 ```
 
 ## Multi-Column Layout
@@ -45,25 +45,25 @@ Try our new product today.
 subject: Monthly Digest
 ---
 
-{{columns}}
+::: columns
 
-{{column}}
+::: column
 
 ### Left Side
 
 Content for the left column.
 
-{{/column}}
+:::
 
-{{column}}
+::: column
 
 ### Right Side
 
 Content for the right column.
 
-{{/column}}
+:::
 
-{{/columns}}
+:::
 ```
 
 ## Custom Theme
@@ -97,6 +97,6 @@ from amail_md import markdown_to_email
 result = markdown_to_email("# Hello\n\nWorld")
 
 # Use both in your email client
-email_body = result.html
-email_text = result.text
+email_body = result["html"]
+email_text = result["text"]
 ```
