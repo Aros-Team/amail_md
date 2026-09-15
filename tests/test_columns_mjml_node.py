@@ -8,8 +8,8 @@ Test naming: test_<unit>_<behavior>_<condition>.
 AAA pattern: Arrange → Act → Assert.
 """
 
-from amail_md.core.models.email_structure.columns import Columns
 from amail_md.core.models.email_structure.column_cell import ColumnCell
+from amail_md.core.models.email_structure.columns import Columns
 from amail_md.infrastructure.adapters.mjml.nodes.columns import render_columns
 
 

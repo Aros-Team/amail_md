@@ -34,7 +34,7 @@ class TestDividerBuilderRegistry:
     """Tests that build_divider is registered in BUILDER_REGISTRY."""
 
     def test_divider_builder_is_registered(self) -> None:
-        """hr builder must be registered in BUILDER_REGISTRY."""
+        """Hr builder must be registered in BUILDER_REGISTRY."""
         from amail_md.core.services.segmenter.registry import BUILDER_REGISTRY
 
         assert "hr" in BUILDER_REGISTRY

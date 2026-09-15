@@ -37,9 +37,7 @@ class TestParagraphBuilder:
 
     def test_build_paragraph_with_inline_markdown(self) -> None:
         """build_paragraph must preserve inline markdown."""
-        token = GenericToken(
-            type="paragraph_open", content="**bold** and *italic*"
-        )
+        token = GenericToken(type="paragraph_open", content="**bold** and *italic*")
         result = build_paragraph(token)
         assert result.text == "**bold** and *italic*"
 

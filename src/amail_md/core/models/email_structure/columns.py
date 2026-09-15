@@ -12,36 +12,24 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-"""Email structure domain models."""
+"""Columns email structure element."""
+
+from dataclasses import dataclass, field
 
 from .base import EmailStructure
-from .button import Button
-from .code import Code
 from .column_cell import ColumnCell
-from .columns import Columns
-from .divider import Divider
-from .heading import Heading
-from .image import Image
-from .link import Link
-from .list import List
-from .paragraph import Paragraph
-from .quote import Quote
-from .spacer import Spacer
-from .table import Table
 
-__all__ = [
-    "EmailStructure",
-    "Button",
-    "Code",
-    "ColumnCell",
-    "Columns",
-    "Divider",
-    "Heading",
-    "Image",
-    "Link",
-    "List",
-    "Paragraph",
-    "Quote",
-    "Spacer",
-    "Table",
-]
+
+@dataclass
+class Columns(EmailStructure):
+    """
+    Multi-column responsive layout.
+
+    Attributes:
+        columns: List of column cells.
+        gap: Gap between columns.
+
+    """
+
+    columns: list[ColumnCell] = field(default_factory=list)
+    gap: str = "16px"

@@ -94,7 +94,7 @@ class TestImageBuilderRegistry:
     """Tests that build_image is registered in BUILDER_REGISTRY."""
 
     def test_image_builder_is_registered(self) -> None:
-        """image builder must be registered in BUILDER_REGISTRY."""
+        """Image builder must be registered in BUILDER_REGISTRY."""
         from amail_md.core.services.segmenter.registry import BUILDER_REGISTRY
 
         assert "image" in BUILDER_REGISTRY

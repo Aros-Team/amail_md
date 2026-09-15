@@ -40,7 +40,7 @@ class TestSpacerBuilderRegistry:
     """Tests that build_spacer is registered in BUILDER_REGISTRY."""
 
     def test_spacer_builder_is_registered(self) -> None:
-        """spacer builder must be registered in BUILDER_REGISTRY."""
+        """Spacer builder must be registered in BUILDER_REGISTRY."""
         from amail_md.core.services.segmenter.registry import BUILDER_REGISTRY
 
         assert "spacer" in BUILDER_REGISTRY

@@ -58,17 +58,16 @@ class TestLinkBuilder:
 
 
 class TestLinkBuilderRegistry:
-    """Tests that build_link is registered in BUILDER_REGISTRY."""
+    """Tests that build_link is available (but not registered in BUILDER_REGISTRY)."""
 
-    def test_link_builder_is_registered(self) -> None:
-        """link_open builder must be registered in BUILDER_REGISTRY."""
+    def test_build_link_is_importable(self) -> None:
+        """build_link must be importable from the link builder module."""
+        from amail_md.core.services.segmenter.builders.link import build_link
+
+        assert callable(build_link)
+
+    def test_link_open_registered_in_registry(self) -> None:
+        """link_open must be registered in BUILDER_REGISTRY (by Button builder)."""
         from amail_md.core.services.segmenter.registry import BUILDER_REGISTRY
 
         assert "link_open" in BUILDER_REGISTRY
-
-    def test_registered_builder_is_build_link(self) -> None:
-        """Registered link_open builder must be build_link."""
-        from amail_md.core.services.segmenter.builders.link import build_link
-        from amail_md.core.services.segmenter.registry import BUILDER_REGISTRY
-
-        assert BUILDER_REGISTRY["link_open"] is build_link

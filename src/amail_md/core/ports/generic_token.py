@@ -46,3 +46,4 @@ class GenericToken:
     children: list["GenericToken"] = field(default_factory=list)
     tag: str = ""
     nesting: int = 0
+    info: str = ""

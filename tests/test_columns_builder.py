@@ -63,7 +63,7 @@ class TestColumnsBuilderRegistry:
     """Tests that build_columns is registered in BUILDER_REGISTRY."""
 
     def test_columns_builder_is_registered(self) -> None:
-        """columns builder must be registered in BUILDER_REGISTRY."""
+        """Columns builder must be registered in BUILDER_REGISTRY."""
         from amail_md.core.services.segmenter.registry import BUILDER_REGISTRY
 
         assert "columns" in BUILDER_REGISTRY

@@ -20,6 +20,36 @@ in ``core.models.email_structure`` so that downstream code can import
 from ``amail_md.email_structure``.
 """
 
-from amail_md.core.models.email_structure import Button, EmailStructure
+from amail_md.core.models.email_structure import (
+    Button,
+    Code,
+    ColumnCell,
+    Columns,
+    Divider,
+    EmailStructure,
+    Heading,
+    Image,
+    Link,
+    List,
+    Paragraph,
+    Quote,
+    Spacer,
+    Table,
+)
 
-__all__ = ["EmailStructure", "Button"]
+__all__ = [
+    "EmailStructure",
+    "Button",
+    "Code",
+    "ColumnCell",
+    "Columns",
+    "Divider",
+    "Heading",
+    "Image",
+    "Link",
+    "List",
+    "Paragraph",
+    "Quote",
+    "Spacer",
+    "Table",
+]

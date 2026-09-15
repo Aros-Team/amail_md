@@ -53,7 +53,7 @@ class TestCodeBuilderRegistry:
     """Tests that build_code is registered in BUILDER_REGISTRY."""
 
     def test_code_builder_is_registered(self) -> None:
-        """fence builder must be registered in BUILDER_REGISTRY."""
+        """Fence builder must be registered in BUILDER_REGISTRY."""
         from amail_md.core.services.segmenter.registry import BUILDER_REGISTRY
 
         assert "fence" in BUILDER_REGISTRY

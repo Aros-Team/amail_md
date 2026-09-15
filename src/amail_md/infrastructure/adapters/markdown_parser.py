@@ -77,4 +77,5 @@ class MarkdownItParser:
             children=children,
             tag=token.tag or "",
             nesting=token.nesting,
+            info=token.info or "",
         )

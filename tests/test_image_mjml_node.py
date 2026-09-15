@@ -54,9 +54,7 @@ class TestImageMjmlNode:
 
     def test_render_image_with_border_radius(self) -> None:
         """render_image must include border-radius when set."""
-        img = Image(
-            src="https://example.com/photo.jpg", border_radius="50%"
-        )
+        img = Image(src="https://example.com/photo.jpg", border_radius="50%")
         result = render_image(img)
         assert 'border-radius="50%"' in result
 

@@ -91,14 +91,10 @@ def _parse_color(attrs: dict[str, str]) -> str | None:
 @register_builder("link_open")
 def build_button(token: GenericToken) -> Button:
     """
-    Build a Button from a link_open token with button attrs.
-
-    When the ``attrs_plugin`` processes ``[text](url){.button}``, it sets
-    ``link_open`` attrs to include ``class: button``.  The builder detects
-    this and returns a Button instead of a Link.
+    Build a Button from a link_open token.
 
     Args:
-        token: A GenericToken of type ``link_open`` with button attrs.
+        token: A GenericToken of type ``link_open``.
 
     Returns:
         A Button EmailStructure instance.
