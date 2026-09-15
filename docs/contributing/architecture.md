@@ -75,15 +75,58 @@ Rules:
 
 ```
 amail_md/
-  __init__.py       # public API (the functions users import) + main()
-  render.py         # orchestrator: drives the pipeline, returns RenderResult
-  configurer/       # frontmatter parsing, Theme resolution/merging
-  segmenter/        # walks markdown-it-py AST → Email Structure
-  renderer/         # assembles EmailStructure → MJML → HTML
-  email_structure/  # domain model: Paragraph, Button, ColumnCell, Heading…
-  ports/            # Protocol interfaces: MarkdownParser, MjmlCompiler
-  adapters/         # concrete implementations: MarkdownItParser, MrmlCompiler
-  exceptions.py     # typed error hierarchy
+├── __init__.py           # public API (markdown_to_email, verify_markdown)
+├── cli.py                # CLI entry point (typer)
+├── exceptions.py         # typed error hierarchy
+└── core/
+    ├── __init__.py
+    ├── orchestrator.py    # drives the pipeline, returns RenderResult
+    ├── ports/
+    │   ├── __init__.py
+    │   ├── markdown_parser.py   # MarkdownParser Protocol
+    │   └── mjml_compiler.py     # MjmlCompiler Protocol
+    ├── services/
+    │   ├── __init__.py
+    │   ├── configurer.py  # frontmatter parsing, Theme resolution/merging
+    │   ├── segmenter/
+    │   │   ├── __init__.py
+    │   │   ├── engine.py   # The motor with the `while` loop (clean)
+    │   │   ├── registry.py # BUILDER_REGISTRY dictionary
+    │   │   └── builders/   # One file per Markdown element
+    │   │       ├── __init__.py
+    │   │       ├── paragraph.py
+    │   │       ├── heading.py
+    │   │       └── button.py
+    │   ├── renderer.py    # assembles EmailStructure → MJML → HTML
+    │   └── linter/
+    │       ├── __init__.py
+    │       ├── engine.py   # Executes rules (NEVER MODIFIED)
+    │       └── rules/      # One file per rule
+    │           ├── __init__.py
+    │           ├── no_empty_urls.py
+    │           └── max_one_h1.py
+    └── models/
+        ├── email_structure/
+        │   ├── __init__.py
+        │   ├── paragraph.py
+        │   ├── button.py
+        │   └── heading.py
+        └── lint/
+            ├── __init__.py
+            └── errors.py
+└── infrastructure/
+    ├── __init__.py
+    └── adapters/
+        ├── __init__.py
+        ├── markdown_parser.py   # MarkdownItParser (markdown-it-py)
+        └── mjml/                # MJML adapter (Registry pattern)
+            ├── __init__.py
+            ├── compiler.py      # MrmlCompiler (NEVER MODIFIED)
+            ├── registry.py      # @register_node decorator
+            └── nodes/           # One file per EmailStructure model
+                ├── __init__.py  # Auto-discovers node files
+                ├── button.py
+                └── paragraph.py
 ```
 
 Architecture pattern: **Ports & Adapters** (hexagonal).
@@ -99,6 +142,66 @@ Pattern rules:
 - Internal modules never import from `__init__.py` (avoids circular imports).
 - No I/O in the core pipeline; anything that touches disk/network/clock lives
   behind an explicit seam (e.g. the CLI entry point).
+
+### Adding a New EmailStructure Element (3-File Pattern)
+
+Each EmailStructure element requires **3 files**:
+
+| File | Location | Responsibility |
+|------|----------|----------------|
+| Model | `core/models/email_structure/<element>.py` | Data definition |
+| Builder | `core/services/segmenter/builders/<element>.py` | AST → Model |
+| MJML Node | `infrastructure/adapters/mjml/nodes/<element>.py` | Model → MJML |
+
+**Why separate?**
+
+- **Single Responsibility** — Model defines data; Builder handles parsing; MJML Node handles rendering.
+- **Dependency Inversion** — Core models have zero dependencies on parsers or renderers.
+- **Open/Closed** — Adding a new element never modifies existing files.
+- **Testability** — Each layer can be tested independently.
+
+Example for Button:
+
+```
+1. core/models/email_structure/button.py      → Button(text, url, variant)
+2. core/services/segmenter/builders/button.py  → Token + attrs{button} → Button
+3. infrastructure/adapters/mjml/nodes/button.py → Button → <mj-button>
+```
+
+### Parser Plugins (Adapter Layer)
+
+Plugins are loaded by the `MarkdownItParser` adapter, not by core.
+
+| Plugin | Package | For Element |
+|--------|---------|-------------|
+| `attrs_plugin` | `mdit-py-plugins` | Button, Image (`{button}`, `{width}`) |
+| `container_plugin` | `mdit-py-plugins` | Spacer, Columns, Hero (`::: name`) |
+| `front_matter_plugin` | `mdit-py-plugins` | Frontmatter (`---`) |
+| `tasklists_plugin` | `mdit-py-plugins` | Task lists (`- [x]`) |
+
+Core never imports these plugins. The adapter loads them to produce the AST tokens that builders expect.
+
+### Parser Independence (Generic Token)
+
+Builders depend on `GenericToken`, not on markdown-it's specific format. Each parser adapter converts its AST to `GenericToken`:
+
+```
+markdown-it → MarkdownItParser → GenericToken → Builder
+remark      → RemarkParser     → GenericToken → Builder
+pandoc      → PandocParser     → GenericToken → Builder
+```
+
+This means changing parsers only requires updating the adapter, not builders.
+
+```python
+# core/ports/generic_token.py
+@dataclass
+class GenericToken:
+    type: str
+    content: str = ""
+    attrs: dict = field(default_factory=dict)
+    children: list["GenericToken"] = field(default_factory=list)
+```
 
 ---
 

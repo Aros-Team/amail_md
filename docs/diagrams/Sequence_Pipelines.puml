@@ -7,10 +7,14 @@ actor "User" as user
 participant "verify_markdown()" as verify
 participant "markdown_to_email()" as email
 participant "configurer" as cfg
-participant "segmenter" as seg
+participant "segmenter\nengine" as seg
+participant "segmenter\nregistry" as seg_reg
 participant "MarkdownParser\n(Port)" as parse
-participant "LinterEngine" as linter
+participant "GenericToken" as token
+participant "LinterEngine" as lint_eng
+participant "linter\nrules" as lint_rules
 participant "renderer" as renderer
+participant "MJML\nregistry" as mjml_reg
 participant "MjmlCompiler\n(Port)" as compile
 
 == Verify Flow ==
@@ -22,18 +26,24 @@ verify -> seg : segment(source)
 activate seg
 seg -> parse : parse(source)
 activate parse
-parse -> parse : markdown-it-py → AST
-parse --> seg : AST
+parse -> parse : markdown-it-py → raw AST
+parse -> token : convert to GenericToken
+parse --> seg : list[GenericToken]
 deactivate parse
-seg -> seg : walk AST → classify blocks
-seg --> verify : EmailStructure
+seg -> seg_reg : dispatch(token.type)
+activate seg_reg
+seg_reg -> seg_reg : builders classify tokens
+seg_reg --> seg : EmailStructure[]
+deactivate seg_reg
+seg --> verify : EmailStructure[]
 deactivate seg
 
-verify -> linter : validate(email_structure)
-activate linter
-linter -> linter : apply rules
-linter --> verify : errors[]
-deactivate linter
+verify -> lint_eng : validate(email_structure)
+activate lint_eng
+lint_eng -> lint_rules : execute all rules
+lint_rules --> lint_eng : errors[]
+lint_eng --> verify : errors[]
+deactivate lint_eng
 
 verify --> user : errors[]
 deactivate verify
@@ -53,32 +63,42 @@ email -> seg : segment(source)
 activate seg
 seg -> parse : parse(source)
 activate parse
-parse -> parse : markdown-it-py → AST
-parse --> seg : AST
+parse -> parse : markdown-it-py → raw AST
+parse -> token : convert to GenericToken
+parse --> seg : list[GenericToken]
 deactivate parse
-seg -> seg : walk AST → classify blocks
-seg --> email : EmailStructure
+seg -> seg_reg : dispatch(token.type)
+activate seg_reg
+seg_reg -> seg_reg : builders classify tokens
+seg_reg --> seg : EmailStructure[]
+deactivate seg_reg
+seg --> email : EmailStructure[]
 deactivate seg
 
-email -> linter : validate(email_structure)
-activate linter
-linter -> linter : apply rules (warnings only)
-linter --> email : warnings[]
-deactivate linter
+email -> lint_eng : validate(email_structure)
+activate lint_eng
+lint_eng -> lint_rules : execute all rules (warnings only)
+lint_rules --> lint_eng : warnings[]
+lint_eng --> email : warnings[]
+deactivate lint_eng
 
 email -> renderer : render(email_structure, theme)
 activate renderer
-renderer -> renderer : each component.to_mjml(theme)
-renderer -> renderer : assemble MJML document
-renderer -> compile : compile(mjml)
-activate compile
-compile -> compile : mrml (Rust) → HTML
-compile --> renderer : HTML
-deactivate compile
-renderer --> email : HTML
+renderer -> mjml_reg : dispatch(model.type)
+activate mjml_reg
+mjml_reg -> mjml_reg : nodes render to MJML
+mjml_reg --> renderer : MJML string
+deactivate mjml_reg
+renderer --> email : MJML
 deactivate renderer
 
-email --> user : RenderResult
+email -> compile : compile(mjml)
+activate compile
+compile -> compile : mrml (Rust) → HTML
+compile --> email : HTML
+deactivate compile
+
+email --> user : RenderResult(html, text, meta, warnings)
 deactivate email
 
 @enduml

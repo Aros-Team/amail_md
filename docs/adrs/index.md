@@ -13,7 +13,10 @@ and consequences.
 | [004](004-documentation-mkdocs.md) | Documentation: MkDocs + Material |
 | [005](005-cli-optional-dependency.md) | CLI as optional dependency |
 | [006](006-linting-verify-markdown.md) | Linting with verify_markdown() |
-| [007](007-email-structure-renders-mjml.md) | EmailStructure components render MJML |
+| [007](007-mjml-compilation-registry.md) | MJML Compilation via Registry Pattern |
+| [008](008-linter-rule-engine.md) | Linter Rule Engine Pattern |
+| [009](009-segmenter-registry.md) | Segmenter Registry Pattern |
+| [010](010-generic-token.md) | Generic Token for Parser Independence |
 
 ## Format
 

@@ -9,28 +9,29 @@ System_Boundary(amailmd, "amail-md") {
 
   Container(api, "Public API", "amail_md.__init__", "markdown_to_email(), verify_markdown()")
 
-  Container(services, "Render Services", "core", "Segmenter + Renderer")
+  Container(core, "Core", "core/", "orchestrator, services, models, ports")
 
-  Container(linter, "Linter", "core", "Validates Email Structure against email rules")
+  Container(lint_rules, "Linter Rules", "core/services/linter/rules/", "One file per validation rule")
 
-  Container(es, "Email Structure", "domain model", "Contract for email pieces")
+  Container(segmenter_builders, "Segmenter Builders", "core/services/segmenter/builders/", "One file per EmailStructure type")
 
-  Container(ports, "Ports", "Protocol", "MarkdownParser, MjmlCompiler")
-  Container(adapters, "Adapters", "Python", "MarkdownItParser, MrmlCompiler")
+  Container(mjml_nodes, "MJML Nodes", "infrastructure/adapters/mjml/nodes/", "One file per EmailStructure type")
+
+  Container(adapters, "Adapters", "infrastructure/adapters/", "MarkdownItParser, MrmlCompiler")
 }
 
 System_Ext(mdit, "markdown-it-py", "Markdown → AST")
+System_Ext(mdit_plugins, "mdit-py-plugins", "attrs, container, frontmatter")
 System_Ext(mrml, "mrml", "MJML → HTML")
 System_Ext(apps, "Sending Applications", "fill in {{variables}} and send")
 
 Rel(user, api, "calls")
-Rel(api, services, "uses")
-Rel(api, linter, "uses")
-Rel(services, ports, "uses")
-Rel(linter, services, "uses")
-Rel(services, es, "uses")
-Rel(ports, adapters, "implemented by")
+Rel(api, core, "uses")
+Rel(core, segmenter_builders, "classifies")
+Rel(core, lint_rules, "validates")
+Rel(core, mjml_nodes, "renders")
 Rel(adapters, mdit, "imports")
+Rel(adapters, mdit_plugins, "imports")
 Rel(adapters, mrml, "imports")
 Rel(api, apps, "returns HTML + text")
 

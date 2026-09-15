@@ -10,52 +10,78 @@ Container_Boundary(amailmd, "amail-md") {
     Component(email, "markdown_to_email()", "entry point", "Converts markdown to email-safe HTML")
   }
 
-  Container_Boundary(services, "Render Services") {
-    Component(cfg, "configurer", "service", "Extracts, resolves, merges and sanitizes frontmatter + theme")
-    Component(seg, "segmenter", "service", "Walks the markdown-it-py AST, classifies blocks → Email Structure")
-    Component(renderer, "renderer", "service", "Assembles EmailStructure → MJML → HTML")
+  Container_Boundary(core, "Core") {
+    Component(orch, "orchestrator", "service", "Drives the pipeline, returns RenderResult")
+
+    Container_Boundary(services, "Services") {
+      Component(cfg, "configurer", "service", "Extracts, resolves, merges frontmatter + theme")
+      Component(seg_engine, "segmenter engine", "service", "Walks AST, applies builders")
+      Component(seg_registry, "segmenter registry", "registry", "Maps token types → builders")
+      Component(lint_engine, "linter engine", "service", "Executes all active rules")
+    }
+
+    Container_Boundary(models, "Models") {
+      Component(es_root, "EmailStructure", "abstract base", "Root contract for email pieces")
+      Component(paragraph, "Paragraph", "model", "Plain text block")
+      Component(heading, "Heading", "model", "Section标题 h1-h6")
+      Component(button, "Button", "model", "CTA: href, text, variant")
+    }
+
+    Container_Boundary(ports, "Ports") {
+      Component(p_parse, "MarkdownParser", "Protocol", "parse(md) → list[GenericToken]")
+      Component(p_comp, "MjmlCompiler", "Protocol", "compile(mjml) → html")
+      Component(p_token, "GenericToken", "dataclass", "Parser-agnostic token")
+    }
   }
 
-  Container_Boundary(lint_b, "Linter") {
-    Component(lint_engine, "LinterEngine", "service", "Validates Email Structure against email rules")
-  }
+  Container_Boundary(infrastructure, "Infrastructure") {
+    Container_Boundary(adapters, "Adapters") {
+      Component(a_parse, "MarkdownItParser", "adapter", "markdown → GenericToken")
+      Component(a_comp, "MrmlCompiler", "adapter", "MJML → HTML")
+    }
 
-  Container_Boundary(es, "Email Structure") {
-    Component(es_root, "EmailStructure", "abstract base", "Root contract: to_mjml(theme) → str")
-  }
+    Container_Boundary(mjml, "MJML Adapter") {
+      Component(mjml_registry, "registry", "registry", "Maps models → renderers")
+      Component(mjml_nodes, "nodes", "renderers", "One file per model")
+    }
 
-  Container_Boundary(ports, "Ports") {
-    Component(p_parse, "MarkdownParser", "Protocol", "parse(md) → Email Structure")
-    Component(p_comp, "MjmlCompiler", "Protocol", "to_html(mjml) → html")
-  }
+    Container_Boundary(segmenter, "Segmenter Builders") {
+      Component(builders, "builders", "builders", "One file per token type")
+    }
 
-  Container_Boundary(adapters, "Adapters") {
-    Component(a_parse, "MarkdownItParser", "adapter", "markdown → Email Structure (uses markdown-it-py)")
-    Component(a_comp, "MrmlCompiler", "adapter", "MJML → HTML (uses mrml)")
+    Container_Boundary(lint, "Linter Rules") {
+      Component(rules, "rules", "rules", "One file per validation rule")
+    }
   }
 }
 
 System_Ext(mdit, "markdown-it-py", "external lib")
+System_Ext(mdit_plugins, "mdit-py-plugins", "attrs, container")
 System_Ext(mrml, "mrml", "external lib")
 
 Rel(verify, lint_engine, "uses")
-Rel(verify, seg, "uses")
+Rel(verify, seg_engine, "uses")
 
-Rel(email, seg, "uses")
-Rel(email, cfg, "uses")
-Rel(email, renderer, "uses")
+Rel(email, orch, "calls")
+Rel(orch, cfg, "uses")
+Rel(orch, seg_engine, "uses")
+Rel(orch, lint_engine, "uses")
+Rel(orch, mjml_registry, "uses")
 
-Rel(renderer, p_comp, "uses")
-Rel(renderer, es_root, "uses")
+Rel(seg_engine, seg_registry, "uses")
+Rel(seg_registry, builders, "dispatches")
+Rel(builders, es_root, "creates")
 
-Rel(lint_engine, es_root, "validates")
+Rel(lint_engine, rules, "executes")
+Rel(rules, es_root, "validates")
 
-Rel(seg, es_root, "builds")
-Rel(seg, p_parse, "uses")
+Rel(mjml_registry, mjml_nodes, "dispatches")
+Rel(mjml_nodes, es_root, "reads")
 
-Rel(p_parse, a_parse, "implemented by")
-Rel(p_comp, a_comp, "implemented by")
+Rel(a_parse, p_parse, "implements")
+Rel(a_comp, p_comp, "implements")
 Rel(a_parse, mdit, "imports")
+Rel(a_parse, mdit_plugins, "imports")
 Rel(a_comp, mrml, "imports")
 
 SHOW_LEGEND()
