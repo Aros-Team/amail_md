@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.2.1](https://github.com/Aros-Team/amail_md/compare/v0.2.0...v0.2.1) (2026-09-15)
+
+
+### Documentation
+
+* align documentation with actual code behavior ([aff579f](https://github.com/Aros-Team/amail_md/commit/aff579fd8b44e1964021ac820dc2e67a7c69d7dc))
+
 ## [0.2.0](https://github.com/Aros-Team/amail_md/compare/v0.1.2...v0.2.0) (2026-09-15)
 
 
