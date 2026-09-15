@@ -12,33 +12,25 @@
 ### `markdown_to_email`
 
 ```python
-def markdown_to_email(source: str, **options: Any) -> RenderResult:
-    """Convert Markdown to email-safe HTML.
+def markdown_to_email(source: str) -> dict:
+    """Convert markdown to email-safe HTML.
 
-    Takes a Markdown document with optional YAML frontmatter and returns
-    a RenderResult containing email-safe HTML, plain text, metadata,
+    Takes a markdown document and returns a dict with html, text, meta,
     and optional warnings.
 
     Args:
         source: Markdown source with optional YAML frontmatter.
-        **options: Configuration overrides (reserved for future use).
 
     Returns:
-        RenderResult with html, text, meta, and optional warnings.
-
-    Raises:
-        ParseError: If input contains unparseable Markdown.
-        ConfigurationError: If frontmatter is invalid.
-        RenderError: If a pipeline stage fails.
-        CompilerError: If mrml compilation fails.
+        Dict with 'html', 'text', 'meta', and optional 'warnings' keys.
 
     Example:
         ```python
         from amail_md import markdown_to_email
 
         result = markdown_to_email("# Hello\\n\\nWorld")
-        print(result.html)  # email-safe HTML
-        print(result.text)  # text/plain fallback
+        print(result["html"])  # email-safe HTML
+        print(result["text"])  # text/plain fallback
         ```
     """
 ```
@@ -98,83 +90,6 @@ class ValidationError:
     severity: str  # "error" | "warning" | "info"
 ```
 
-### `RenderResult`
-
-```python
-@dataclass(frozen=True)
-class RenderResult:
-    """Final output from the render pipeline.
-
-    Attributes:
-        html: Email-safe HTML (responsive, inline styles).
-        text: text/plain fallback for email clients.
-        meta: Extracted metadata (subject, preheader, etc.).
-        warnings: Optional conversion warnings.
-    """
-    html: str
-    text: str
-    meta: dict[str, str]
-    warnings: list[str] | None = None
-```
-
-### `Frontmatter`
-
-```python
-@dataclass(frozen=True)
-class Frontmatter:
-    """Configuration parsed from YAML frontmatter.
-
-    Attributes:
-        subject: Email subject line.
-        preheader: Preview text shown in inbox.
-        theme: Visual theme configuration.
-    """
-    subject: str | None = None
-    preheader: str | None = None
-    theme: Theme | None = None
-```
-
-### `Theme`
-
-```python
-@dataclass(frozen=True)
-class Theme:
-    """Visual theme with 22 properties for email styling.
-
-    Categories:
-        - Colors: primary, secondary, background, text, link, button_text, border
-        - Typography: font_family, heading_font, font_size, line_height
-        - Layout: content_width, padding, button_radius, button_style
-        - Dark mode: dark_background, dark_text, dark_primary, dark_secondary
-    """
-    # Colors
-    primary_color: str = "#007bff"
-    secondary_color: str = "#6c757d"
-    background_color: str = "#ffffff"
-    text_color: str = "#333333"
-    link_color: str = "#007bff"
-    button_text_color: str = "#ffffff"
-    border_color: str = "#dee2e6"
-
-    # Typography
-    font_family: str = "Arial, sans-serif"
-    heading_font: str | None = None
-    font_size: str = "16px"
-    line_height: str = "1.5"
-
-    # Layout
-    content_width: str = "600px"
-    padding: str = "20px"
-    button_radius: str = "8px"
-    button_style: str = "primary"
-
-    # Dark mode
-    dark_background: str = "#1a1a1a"
-    dark_text: str = "#ffffff"
-    dark_primary: str = "#3399ff"
-    dark_secondary: str = "#999999"
-```
-
 ---
 
 ## Email Structure Types
@@ -182,14 +97,13 @@ class Theme:
 ### Base
 
 ```python
-from abc import ABC
-
-class EmailStructure(ABC):
-    """Abstract base for all email structure elements.
+class EmailStructure:
+    """Base class for all email structure elements.
 
     Every email piece (paragraph, heading, button, etc.) inherits from
     this class. The segmenter produces EmailStructure instances from
-    the markdown-it-py AST.
+    the markdown-it-py AST, and the MJML adapter renders them to
+    markup via the registry pattern.
     """
 ```
 
@@ -417,26 +331,47 @@ class CompilerError(AmailError):
 ## CLI
 
 ```bash
-amail-md [input.md] [-o output.html] [--text]
+amail-md lint <file>       # Validate markdown email template
+amail-md render <file>     # Convert markdown to HTML
 ```
+
+### Subcommands
+
+| Command | Description |
+|---------|-------------|
+| `lint` | Validate markdown and report errors with suggestions |
+| `render` | Convert markdown to email-safe HTML |
+
+### `lint` flags
 
 | Flag | Description |
 |------|-------------|
+| `file` | Markdown file (or `-` for stdin) |
+
+### `render` flags
+
+| Flag | Description |
+|------|-------------|
+| `file` | Markdown file (or `-` for stdin) |
 | `-o`, `--output` | Output file (default: stdout) |
 | `--text` | Output text/plain only |
+| `--html` | Output HTML only |
 
 **Examples:**
 
 ```bash
+# Lint a template
+amail-md lint input.md
+
 # Render to stdout
-amail-md input.md
+amail-md render input.md
 
 # Write to file
-amail-md input.md -o output.html
+amail-md render input.md -o output.html
 
 # Plain text only
-amail-md input.md --text
+amail-md render input.md --text
 
 # Pipe from stdin
-echo "# Hello" | amail-md
+echo "# Hello" | amail-md render -
 ```

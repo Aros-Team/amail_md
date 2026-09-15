@@ -28,7 +28,7 @@ We needed a name and a shape for this model that reflect the domain.
 
 ## Decision
 
-- The model is **`EmailStructure`**, an **abstract base class** that every piece
+- The model is **`EmailStructure`**, a **base class** that every piece
   of an email implements. "Email Structure" points at *how the email is
   composed* — the pieces that make it up and how they nest.
 - Every element the parser reports and that we support is modeled as a concrete

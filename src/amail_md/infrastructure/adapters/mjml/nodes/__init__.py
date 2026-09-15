@@ -1,0 +1,22 @@
+# Copyright 2026 Aros Team
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+"""Auto-discovery for MJML node renderer modules."""
+
+import importlib
+import pkgutil
+
+for _importer, _module_name, _is_pkg in pkgutil.iter_modules(__path__):
+    if _module_name != "__init__":
+        importlib.import_module(f"{__name__}.{_module_name}")

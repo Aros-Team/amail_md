@@ -32,13 +32,18 @@ infrastructure/adapters/mjml/
 ### Registry (registry.py)
 
 ```python
-from typing import Callable, Dict, Type, Any
+from collections.abc import Callable
+from typing import Any
 
-RENDER_REGISTRY: Dict[Type, Callable[[Any], str]] = {}
+RENDER_REGISTRY: dict[type, Callable[[Any], str]] = {}
 
-def register_node(model_class: Type):
-    """Decorator to register an MJML renderer for a specific model."""
-    def decorator(func: Callable[[Any], str]):
+RendererFunc = Callable[[Any], str]
+DecoratorType = Callable[[RendererFunc], RendererFunc]
+
+
+def register_node(model_class: type) -> DecoratorType:
+    """Register a render function for an EmailStructure type."""
+    def decorator(func: RendererFunc) -> RendererFunc:
         RENDER_REGISTRY[model_class] = func
         return func
     return decorator
@@ -52,7 +57,7 @@ from ..registry import register_node
 
 @register_node(Button)
 def render_button(element: Button) -> str:
-    return f'<mj-button href="{element.url}">{element.text}</mj-button>'
+    return f'<mj-button href="{element.href}">{element.text}</mj-button>'
 ```
 
 ### Compiler (compiler.py)

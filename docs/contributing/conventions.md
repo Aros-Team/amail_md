@@ -42,13 +42,13 @@ No `Service`/`Manager` suffixes on class names unless they describe a real role.
 
 ## 3. Project Layout
 
-- **Package code** lives in `src/amail_md/`, split by responsibility (markdown,
-  render, sanitize) per `docs/architecture.md`.
+- **Package code** lives in `src/amail_md/`, split by responsibility per
+  `docs/contributing/architecture.md`.
 - **Public API** is exported from `src/amail_md/__init__.py`.
 - **Tests** live in `tests/`, mirroring the package structure.
 - **Scripts** (harness) live in `scripts/` and are not shipped as part of the
   installed package.
-- Add new modules only if described in `docs/architecture.md`.
+- Add new modules only if described in `docs/contributing/architecture.md`.
 
 ---
 
@@ -58,8 +58,8 @@ No `Service`/`Manager` suffixes on class names unless they describe a real role.
   the functions users import. Keep it tiny and stable.
 - The core pipeline is **pure functions**: same input → same output, no I/O, no
   hidden state.
-- The `amail-md` console script (`main()` in `__init__.py`) is a thin wrapper:
-  it reads input, calls the public API, and prints HTML. No conversion logic
+- The `amail-md` console script (`main()` in `cli.py`) is a thin wrapper:
+  it reads input, calls the public API, and prints output. No conversion logic
   lives there.
 - Exit codes are meaningful (0 = success, non-zero = failure).
 - Errors are reported on stderr; stdout carries the command output only.
@@ -101,7 +101,7 @@ See `docs/development.md` for the full policy and rationale.
 
 ---
 
-## 7. License Header
+## 8. License Header
 
 Every source file under `src/` must start with the Apache 2.0 license header.
 The header is enforced by the harness (`uv run python scripts/harness.py`).

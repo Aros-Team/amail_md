@@ -76,57 +76,47 @@ Rules:
 ```
 amail_md/
 ├── __init__.py           # public API (markdown_to_email, verify_markdown)
-├── cli.py                # CLI entry point (typer)
-├── exceptions.py         # typed error hierarchy
+├── cli.py                # CLI entry point (argparse)
+├── email_structure/      # re-export module for test compatibility
+│   └── __init__.py
 └── core/
     ├── __init__.py
-    ├── orchestrator.py    # drives the pipeline, returns RenderResult
     ├── ports/
     │   ├── __init__.py
-    │   ├── markdown_parser.py   # MarkdownParser Protocol
-    │   └── mjml_compiler.py     # MjmlCompiler Protocol
+    │   └── generic_token.py     # GenericToken dataclass (ADR-010)
     ├── services/
     │   ├── __init__.py
-    │   ├── configurer.py  # frontmatter parsing, Theme resolution/merging
     │   ├── segmenter/
     │   │   ├── __init__.py
-    │   │   ├── engine.py   # The motor with the `while` loop (clean)
-    │   │   ├── registry.py # BUILDER_REGISTRY dictionary
-    │   │   └── builders/   # One file per Markdown element
-    │   │       ├── __init__.py
-    │   │       ├── paragraph.py
-    │   │       ├── heading.py
+    │   │   ├── engine.py        # The motor with the `while` loop (clean)
+    │   │   ├── registry.py      # BUILDER_REGISTRY dictionary
+    │   │   └── builders/        # One file per Markdown element
+    │   │       ├── __init__.py  # Auto-discovers builder files
     │   │       └── button.py
-    │   ├── renderer.py    # assembles EmailStructure → MJML → HTML
     │   └── linter/
     │       ├── __init__.py
-    │       ├── engine.py   # Executes rules (NEVER MODIFIED)
-    │       └── rules/      # One file per rule
+    │       ├── engine.py        # Executes rules (NEVER MODIFIED)
+    │       └── rules/           # One file per rule
     │           ├── __init__.py
     │           ├── no_empty_urls.py
-    │           └── max_one_h1.py
+    │           └── relative_urls.py
     └── models/
         ├── email_structure/
         │   ├── __init__.py
-        │   ├── paragraph.py
-        │   ├── button.py
-        │   └── heading.py
+        │   ├── base.py          # EmailStructure base class
+        │   └── button.py
         └── lint/
             ├── __init__.py
-            └── errors.py
+            └── errors.py        # ValidationError dataclass
 └── infrastructure/
     ├── __init__.py
     └── adapters/
-        ├── __init__.py
-        ├── markdown_parser.py   # MarkdownItParser (markdown-it-py)
         └── mjml/                # MJML adapter (Registry pattern)
             ├── __init__.py
-            ├── compiler.py      # MrmlCompiler (NEVER MODIFIED)
             ├── registry.py      # @register_node decorator
             └── nodes/           # One file per EmailStructure model
                 ├── __init__.py  # Auto-discovers node files
-                ├── button.py
-                └── paragraph.py
+                └── button.py
 ```
 
 Architecture pattern: **Ports & Adapters** (hexagonal).
@@ -287,20 +277,20 @@ Responsive behavior (via MJML):
 
 Everything in `src/amail_md/__init__.py` is the public contract:
 
-- `markdown_to_email(source, **options) -> RenderResult` — converts Markdown to email-safe HTML.
+- `markdown_to_email(source) -> dict` — converts Markdown to email-safe HTML (minimal implementation, full pipeline pending).
 - `verify_markdown(source) -> list[ValidationError]` — validates Markdown and returns detailed errors.
 - Typed exceptions in `amail_md.exceptions`.
 - Domain types in `amail_md.email_structure` (Paragraph, Button, Heading, etc.)
   for advanced usage and extension.
 
-`RenderResult` dataclass:
+`markdown_to_email()` returns a dict with these keys:
 
-| Field | Type | Description |
-|-------|------|-------------|
+| Key | Type | Description |
+|-----|------|-------------|
 | `html` | `str` | Email-safe HTML |
 | `text` | `str` | text/plain fallback |
 | `meta` | `dict` | Extracted metadata (subject, preheader…) |
-| `warnings` | `list[str]?` | Optional conversion warnings |
+| `warnings` | `list` | Conversion warnings (currently empty)
 
 `ValidationError` dataclass:
 
@@ -321,7 +311,7 @@ It is thin and contains no conversion logic beyond calling the public API.
 ## 8. Email Structure (Domain Model)
 
 The intermediate model between the parser and the compiler is **`EmailStructure`**,
-an abstract base class that every piece of an email implements (see ADR-0002).
+a base class that every piece of an email implements (see ADR-0002).
 
 Why "Email Structure" instead of "IR" or "data model": it points at *how the
 email is composed* — the pieces that make it up and how they nest.
@@ -345,8 +335,9 @@ Rules:
 - The core only knows these domain elements.
 - `Theme` is **not** an `EmailStructure` — it is configuration.
 - `RenderResult` (html, text, meta, warnings) is assembled by the orchestrator.
-- Each `EmailStructure` component implements `to_mjml(theme)` to render itself.
-- Adding a new element means adding a new subclass with `to_mjml()`.
+- `EmailStructure` subclasses are **pure data classes** — no rendering logic.
+- MJML rendering lives in `infrastructure/adapters/mjml/nodes/` via the registry pattern (see ADR-007).
+- Adding a new element means adding a new data class + a registry node file.
 
 ---
 

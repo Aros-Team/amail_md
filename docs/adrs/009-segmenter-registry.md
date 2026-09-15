@@ -32,14 +32,20 @@ core/services/segmenter/
 ### Registry (registry.py)
 
 ```python
-from typing import Callable, Dict, Type, Any
+from collections.abc import Callable
+from typing import Any
+
 from amail_md.core.models.email_structure import EmailStructure
 
-BUILDER_REGISTRY: Dict[str, Callable[[Any], EmailStructure]] = {}
+BUILDER_REGISTRY: dict[str, Callable[[Any], EmailStructure]] = {}
 
-def register_builder(token_type: str):
-    """Decorator to register a builder for a specific AST token type."""
-    def decorator(func: Callable[[Any], EmailStructure]):
+BuilderFunc = Callable[[Any], EmailStructure]
+DecoratorType = Callable[[BuilderFunc], BuilderFunc]
+
+
+def register_builder(token_type: str) -> DecoratorType:
+    """Register a builder for a specific AST token type."""
+    def decorator(func: BuilderFunc) -> BuilderFunc:
         BUILDER_REGISTRY[token_type] = func
         return func
     return decorator
