@@ -45,6 +45,10 @@ warn_unused_ignores = true
 strict_equality = true
 exclude = ["build/"]
 
+[[tool.mypy.overrides]]
+module = "mrml"
+ignore_missing_imports = true
+
 [tool.pytest.ini_options]
 pythonpath = ["src"]
 testpaths = ["tests"]
