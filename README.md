@@ -137,13 +137,16 @@ The intermediate representation between parser and compiler:
 | `Paragraph` | Plain text block (default fallback) |
 | `Heading` | Section headers (h1-h6) |
 | `Button` | Call-to-action with href, text, variant |
-| `Columns` | Multi-column layout container |
-| `ColumnCell` | One column within a Columns block |
 | `List` | Ordered or unordered list |
-| `Quote` | Blockquote |
-| `Image` | Image with alt text and src |
+| `Quote` | Blockquote for cited content |
+| `Image` | Responsive image with alt text and src |
 | `Divider` | Horizontal rule / separator |
 | `Spacer` | Vertical spacing element |
+| `Columns` | Multi-column layout container |
+| `ColumnCell` | One column within a Columns block |
+| `Table` | GFM table with column alignment |
+| `Code` | Code block with syntax highlighting |
+| `Link` | Hyperlink to external resources |
 
 ## Configuration
 

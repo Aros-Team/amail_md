@@ -1,0 +1,157 @@
+{
+  "project": "amail-md",
+  "description": "Markdown email tool",
+  "activities": [
+    {
+      "id": "gallery-email-structure",
+      "type": "feat",
+      "name": "Email Structure Gallery",
+      "title": "Crear galería de EmailStructure",
+      "description": "Crear docs/email-structure.md con galería de los 13 tipos básicos de EmailStructure.",
+      "acceptance": [
+        "docs/email-structure.md creado con 13 tipos",
+        "Cada tipo tiene descripción, sintaxis Markdown, y espacio para ejemplo visual",
+        "Agregado al nav en zensical.toml",
+        "Harness verde"
+      ],
+      "tasks": [
+        { "id": "a", "description": "Crear docs/email-structure.md con estructura base y los 13 tipos", "status": "done" },
+        { "id": "b", "description": "Agregar al nav en zensical.toml", "status": "done" },
+        { "id": "c", "description": "Revisar que la galería sea clara", "status": "done" }
+      ],
+      "status": "done"
+    },
+    {
+      "id": "api-reference",
+      "type": "feat",
+      "name": "API Reference",
+      "title": "Crear API Reference con mkdocstrings",
+      "description": "Crear docs/api-reference.md con documentación técnica completa usando mkdocstrings.",
+      "acceptance": [
+        "docs/api-reference.md creado",
+        "mkdocstrings genera documentación desde docstrings",
+        "Todas las funciones, clases, y excepciones documentadas",
+        "Harness verde"
+      ],
+      "tasks": [
+        { "id": "a", "description": "Crear docs/api-reference.md con mkdocstrings directives", "status": "done" },
+        { "id": "b", "description": "Verificar que mkdocstrings extrae docstrings correctamente", "status": "done" },
+        { "id": "c", "description": "Revisar completitud de la referencia", "status": "done" }
+      ],
+      "status": "done"
+    },
+    {
+      "id": "tests-email-structure",
+      "type": "feat",
+      "name": "Tests EmailStructure",
+      "title": "Crear tests para los 13 tipos básicos",
+      "description": "Crear tests que comprueben que cada tipo de EmailStructure puede ser instanciado y que el segmenter debería producir el tipo correcto.",
+      "acceptance": [
+        "Tests para los 13 tipos existen",
+        "Cada tipo puede ser instanciado",
+        "Tests definen qué debería producir el segmenter",
+        "Harness verde"
+      ],
+      "tasks": [
+        { "id": "a", "description": "Crear tests/test_email_structure_types.py", "status": "done" },
+        { "id": "b", "description": "Tests de instanciación de cada tipo", "status": "done" },
+        { "id": "c", "description": "Tests de que el segmenter produce el tipo correcto", "status": "done" },
+        { "id": "d", "description": "Revisar cobertura", "status": "done" }
+      ],
+      "status": "done"
+    },
+    {
+      "id": "cli",
+      "type": "feat",
+      "name": "cli",
+      "title": "CLI con typer (lint/render)",
+      "description": "Crear CLI con comandos amail-md lint y amail-md render usando typer.",
+      "acceptance": [
+        "typer agregado como dependencia opcional en pyproject.toml",
+        "docs/cli.md creado con documentación de comandos",
+        "Tests para CLI creados (lint y render)",
+        "Harness verde"
+      ],
+      "tasks": [
+        { "id": "a", "description": "Agregar typer como dependencia opcional en pyproject.toml", "status": "done", "agent": "implementer" },
+        { "id": "b", "description": "Crear docs/cli.md con documentación de comandos lint y render", "status": "done", "agent": "implementer" },
+        { "id": "c", "description": "Crear tests/test_cli.py para comandos lint y render", "status": "done", "agent": "implementer" }
+      ],
+      "status": "done"
+    },
+    {
+      "id": "linter",
+      "type": "feat",
+      "name": "linter",
+      "title": "Módulo linter con verify_markdown()",
+      "description": "Crear módulo lint/ con verify_markdown() que valide markdown y devuelva errores detallados con sugerencias.",
+      "acceptance": [
+        "ADR-0006 creado para decisión de linting (formato ValidationError, reglas, integración)",
+        "docs/linter.md creado con documentación del módulo (API, códigos de error, ejemplos)",
+        "tests/test_linter.py creados para validación (RED phase)",
+        "Harness verde"
+      ],
+      "tasks": [
+        { "id": "a", "description": "Crear ADR-0006 para decisión de linting", "status": "done", "agent": "implementer" },
+        { "id": "b", "description": "Crear docs/linter.md con documentación del módulo", "status": "done", "agent": "implementer" },
+        { "id": "c", "description": "Crear tests/test_linter.py para validación", "status": "done", "agent": "implementer" }
+      ],
+      "status": "done"
+    },
+    {
+      "id": "tests-components",
+      "type": "feat",
+      "name": "Tests de builders y MJML nodes",
+      "title": "Crear tests para builders y MJML nodes de los 11 tipos restantes",
+      "description": "Crear tests que definen cómo deben funcionar los builders (GenericToken → EmailStructure) y los MJML nodes (EmailStructure → MJML) para los 11 tipos restantes. También actualizar documentación completa.",
+      "acceptance": [
+        "11 test files de builders creados (paragraph, heading, list, quote, image, divider, spacer, columns, table, code, link)",
+        "11 test files de MJML nodes creados",
+        "Todos los tests fallan con ModuleNotFoundError (RED phase)",
+        "docs/email-structure.md actualizado",
+        "docs/api-reference.md verificado",
+        "README.md actualizado con todos los tipos",
+        "Harness verde (solo tests de tipos implementados pasan)"
+      ],
+      "tasks": [
+        { "id": "a", "description": "Crear 11 test files de builders", "status": "done", "agent": "implementer" },
+        { "id": "b", "description": "Crear 11 test files de MJML nodes", "status": "done", "agent": "implementer" },
+        { "id": "c", "description": "Actualizar docs/email-structure.md", "status": "done", "agent": "implementer" },
+        { "id": "d", "description": "Actualizar README.md con todos los tipos", "status": "done", "agent": "implementer" },
+        { "id": "e", "description": "Verificar docs/api-reference.md", "status": "done", "agent": "implementer" },
+        { "id": "f", "description": "Confirmar RED en todos los tests nuevos", "status": "done", "agent": "implementer" }
+      ],
+      "status": "done"
+    },
+    {
+      "id": "implement-components",
+      "type": "feat",
+      "name": "Implementar 11 tipos restantes",
+      "title": "Implementar dataclasses, builders y MJML nodes para los 11 tipos",
+      "description": "Implementar uno por uno los 11 tipos restantes de EmailStructure, con review de cada uno y actualización de documentación completa.",
+      "acceptance": [
+        "11 dataclasses creadas en core/models/email_structure/",
+        "11 builders creados en core/services/segmenter/builders/",
+        "11 MJML nodes creados en infrastructure/adapters/mjml/nodes/",
+        "__init__.py actualizados con exports",
+        "Todos los tests de builders pasan (GREEN)",
+        "Todos los tests de MJML nodes pasan (GREEN)",
+        "Todos los tests de email_structure_types pasan",
+        "Pipeline end-to-end funciona para cada tipo",
+        "ruff check + ruff format + mypy pasan",
+        "docs/email-structure.md actualizado con ejemplos renderizados",
+        "README.md verificado",
+        "Harness verde"
+      ],
+      "tasks": [
+        { "id": "a", "description": "Batch 1: Paragraph, Heading, Divider, Spacer", "status": "pending", "agent": "implementer" },
+        { "id": "b", "description": "Batch 2: Image, Code, Link, Quote", "status": "pending", "agent": "implementer" },
+        { "id": "c", "description": "Batch 3: List, Table", "status": "pending", "agent": "implementer" },
+        { "id": "d", "description": "Batch 4: Columns + ColumnCell", "status": "pending", "agent": "implementer" },
+        { "id": "e", "description": "Review final: pipeline end-to-end + harness", "status": "pending", "agent": "reviewer" },
+        { "id": "f", "description": "Actualizar documentación completa", "status": "pending", "agent": "implementer" }
+      ],
+      "status": "in_progress"
+    }
+  ]
+}
